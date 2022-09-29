@@ -1,0 +1,33 @@
+---
+kind: pipeline
+type: ssh
+name: Tutorial
+
+server:
+  host: testerver
+  user: droneci
+  ssh_key:
+    from_secret: rsa_key
+
+clone:
+  disable: true
+
+steps:
+  - name: clone
+    environment:
+      KEY:
+        from_secret: ssh_key
+    commands:
+      - echo "$KEY" > $HOME/.ssh/id_git_rsa
+      - git clone ssh://git@your.gitserver.com:22/USERNAME/REPOSITORY.git .
+      - git checkout $DRONE_COMMIT
+
+  - name: Show Environment
+    commands:
+      - whoami
+      - pwd
+      - hostname
+
+  - name: Run Test Script
+    commands:
+      - ./test.sh
